@@ -20,7 +20,7 @@ const __dirname = path.dirname(__filename);
 
 // Middlewares
 app.use(cors({ origin: "*" }));
-app.use(helmet());
+
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser())
@@ -32,7 +32,15 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Static Files
 app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  "/bootstrap",
+  express.static("node_modules/bootstrap/dist")
+);
 
+app.use(
+  "/bootstrap-icons",
+  express.static("node_modules/bootstrap-icons/font")
+);
 import allRoute from './routes/all.route.js';
 app.use('/',allRoute)
 
