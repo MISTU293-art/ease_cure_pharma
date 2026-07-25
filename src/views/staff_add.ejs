@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Registration | Ease Cure Pharma</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            font-family:'Segoe UI',sans-serif;
+            background:linear-gradient(135deg,#eef4ff,#dbeafe,#ffffff);
+            min-height:100vh;
+        }
+
+        /* Main Content */
+
+        .main-content{
+            margin-left:280px;
+            padding:40px 20px;
+            transition:.3s;
+        }
+
+        /* Glass Card */
+
+        .register-card{
+            background:rgba(255,255,255,.75);
+            backdrop-filter:blur(20px);
+            -webkit-backdrop-filter:blur(20px);
+            border-radius:22px;
+            border:1px solid rgba(255,255,255,.5);
+            box-shadow:0 20px 45px rgba(37,99,235,.15);
+            overflow:hidden;
+        }
+
+        /* Header */
+
+        .card-header{
+            background:linear-gradient(135deg,#2563EB,#1D4ED8);
+            border:none;
+            padding:35px;
+        }
+
+        .logo-box{
+            width:75px;
+            height:75px;
+            background:rgba(255,255,255,.2);
+            border-radius:50%;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            margin:auto;
+            color:#fff;
+            font-size:34px;
+            border:2px solid rgba(255,255,255,.4);
+        }
+
+        .card-header h2{
+            margin-top:15px;
+            font-weight:700;
+        }
+
+        .card-header p{
+            color:#dbeafe;
+            margin-bottom:0;
+        }
+
+        .card-body{
+            padding:40px;
+        }
+
+        /* Labels */
+
+        .form-label{
+            color:#1e3a8a;
+            font-weight:600;
+        }
+
+        .required{
+            color:red;
+        }
+
+        /* Inputs */
+
+        .form-control,
+        .form-select{
+            height:52px;
+            border-radius:12px;
+            border:1px solid #dbeafe;
+        }
+
+        .form-control:focus,
+        .form-select:focus{
+            border-color:#2563EB;
+            box-shadow:0 0 0 .2rem rgba(37,99,235,.15);
+        }
+
+        .input-group-text{
+            background:#fff;
+            color:#2563EB;
+            border-radius:12px 0 0 12px;
+            border-color:#dbeafe;
+        }
+
+        .password-btn{
+            cursor:pointer;
+            background:#fff;
+        }
+
+        /* Button */
+
+        .btn-register{
+            background:#2563EB;
+            color:#fff;
+            height:52px;
+            border:none;
+            border-radius:12px;
+            font-weight:600;
+            transition:.3s;
+        }
+
+        .btn-register:hover{
+            background:#1D4ED8;
+            transform:translateY(-2px);
+            box-shadow:0 10px 20px rgba(37,99,235,.25);
+        }
+
+        /* Mobile */
+
+        @media(max-width:991px){
+
+            .main-content{
+                margin-left:0;
+                padding:20px;
+            }
+
+            .register-card{
+                margin-top:80px;
+            }
+
+        }
+
+        @media(max-width:576px){
+
+            .card-body{
+                padding:25px;
+            }
+
+            .card-header{
+                padding:25px;
+            }
+
+            .logo-box{
+                width:60px;
+                height:60px;
+                font-size:28px;
+            }
+
+            .card-header h2{
+                font-size:24px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <%- include('./partials/sidebar.ejs') %>
+
+    <div class="main-content">
+
+        <div class="container">
+
+            <div class="row justify-content-center">
+
+                <div class="col-lg-8 col-xl-7">
+
+                    <div class="card register-card">
+
+                        <div class="card-header text-center text-white">
+
+                            <div class="logo-box">
+                                <i class="bi bi-person-plus-fill"></i>
+                            </div>
+
+                            <h2>Staff Registration</h2>
+
+                            <p>Create a new staff account for Ease Cure Pharma</p>
+
+                        </div>
+
+                        <div class="card-body">
+
+                            <form action="/api/v1/register" method="POST">
+
+                                <!-- Name -->
+
+                                <div class="mb-4">
+
+                                    <label class="form-label">
+                                        Full Name
+                                        <span class="required">*</span>
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+                                            <i class="bi bi-person-fill"></i>
+                                        </span>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="name"
+                                            placeholder="Enter Full Name"
+                                            required>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- Email -->
+
+                                <div class="mb-4">
+
+                                    <label class="form-label">
+                                        Email Address
+                                        <span class="required">*</span>
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+                                            <i class="bi bi-envelope-fill"></i>
+                                        </span>
+
+                                        <input
+                                            type="email"
+                                            class="form-control"
+                                            name="email"
+                                            placeholder="example@gmail.com"
+                                            required>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- Role & Salary -->
+
+                                <div class="row">
+
+                                    <div class="col-md-6 mb-4">
+
+                                        <label class="form-label">
+                                            Staff Role
+                                        </label>
+
+                                        <div class="input-group">
+
+                                            <span class="input-group-text">
+                                                <i class="bi bi-person-badge-fill"></i>
+                                            </span>
+
+                                            <select class="form-select" name="role">
+
+                                                <option selected disabled>Select Role</option>
+                                                <option value="admin">Admin</option>
+                                                <option value="pharmacist">Pharmacist</option>
+                                                <option value="cashier">Cashier</option>
+                                                <option value="staff">Staff</option>
+
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-md-6 mb-4">
+
+                                        <label class="form-label">
+                                            Monthly Salary
+                                        </label>
+
+                                        <div class="input-group">
+
+                                            <span class="input-group-text">
+                                                <i class="bi bi-cash-stack"></i>
+                                            </span>
+
+                                            <input
+                                                type="number"
+                                                class="form-control"
+                                                name="salary"
+                                                placeholder="Salary">
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- Password -->
+
+                                <div class="mb-4">
+
+                                    <label class="form-label">
+                                        Password
+                                        <span class="required">*</span>
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+                                            <i class="bi bi-lock-fill"></i>
+                                        </span>
+
+                                        <input
+                                            type="password"
+                                            id="password"
+                                            class="form-control"
+                                            name="password"
+                                            placeholder="Create Password"
+                                            required>
+
+                                        <span class="input-group-text password-btn" onclick="togglePassword('password',this)">
+                                            <i class="bi bi-eye"></i>
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- Confirm Password -->
+
+                                <div class="mb-4">
+
+                                    <label class="form-label">
+                                        Confirm Password
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text">
+                                            <i class="bi bi-shield-lock-fill"></i>
+                                        </span>
+
+                                        <input
+                                            type="password"
+                                            id="confirmPassword"
+                                            class="form-control"
+                                            placeholder="Confirm Password">
+
+                                        <span class="input-group-text password-btn" onclick="togglePassword('confirmPassword',this)">
+                                            <i class="bi bi-eye"></i>
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="d-grid">
+
+                                    <button class="btn btn-primary">
+
+                                        <i class="bi bi-person-plus-fill me-2"></i>
+
+                                        Register Staff
+
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+<script>
+
+function togglePassword(id, element){
+
+    const input = document.getElementById(id);
+    const icon = element.querySelector("i");
+
+    if(input.type === "password"){
+        input.type = "text";
+        icon.classList.replace("bi-eye","bi-eye-slash");
+    }else{
+        input.type = "password";
+        icon.classList.replace("bi-eye-slash","bi-eye");
+    }
+
+}
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

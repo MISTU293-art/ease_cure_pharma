@@ -1,0 +1,198 @@
+import userModel from "../models/user.models.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
+};
+
+async function registerUser(req, res) {
+  try {
+    const { name, email, password, salary, role = "staff" } = req.body;
+
+    if (!name || !email || !password || !salary) {
+      return res.render("staff_add", {
+        error: "Please fill in all required fields.",
+      });
+    }
+
+    const isUserExists = await userModel.findOne({ email });
+
+    if (isUserExists) {
+      return res.render("staff_add", {
+        error: "Email already exists.",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await userModel.create({
+      name,
+      email,
+      password: hashedPassword,
+      salary,
+      role,
+    });
+
+    const accessToken = jwt.sign(
+      {
+        _id: user._id,
+        email: user.email,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1d",
+      },
+    );
+
+    const refreshToken = jwt.sign(
+      {
+        _id: user._id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      },
+    );
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.cookie("accessToken", accessToken, {
+      ...cookieOptions,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      ...cookieOptions,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.redirect("/");
+  } catch (error) {
+    console.error("Register Error:", error);
+
+    return res.render("staff_add", {
+      error: "Something went wrong. Please try again.",
+    });
+  }
+}
+
+async function loginUser(req, res) {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.render("login", {
+        error: "Please enter email and password.",
+      });
+    }
+
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.render("login", {
+        error: "Invalid email or password.",
+      });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.render("login", {
+        error: "Invalid email or password.",
+      });
+    }
+
+    const accessToken = jwt.sign(
+      {
+        _id: user._id,
+        email: user.email,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1d",
+      },
+    );
+
+    const refreshToken = jwt.sign(
+      {
+        _id: user._id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      },
+    );
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.cookie("accessToken", accessToken, {
+      ...cookieOptions,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      ...cookieOptions,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.redirect("/dashboard");
+  } catch (error) {
+    console.error("Login Error:", error);
+
+    return res.render("login", {
+      error: "Internal Server Error. Please try again.",
+    });
+  }
+}
+async function logout(req, res) {
+  try {
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    return res.redirect("/");
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).render("login", {
+      error: "Unable to logout. Please try again.",
+    });
+  }
+}
+
+async function welcomeMessage(req, res) {
+  try {
+    const _id = req.user;
+    const user = await userModel.findById(_id);
+    return res.render("dashboard", {
+      user,
+    });
+  } catch (error) {
+    return res.render("login", {
+      error: "Internal Server Error",
+    });
+  }
+}
+
+async function allStaff(req,res) {
+  try{
+    const staffs= await userModel.find();
+    return res.render('all_staff',{
+      staffs
+    })
+  }
+  catch(error){
+    return res.render('login',{
+      error:"Internal Server Error"
+    })
+  }
+}
+
+export { logout };
+export { registerUser, loginUser, welcomeMessage,allStaff };
