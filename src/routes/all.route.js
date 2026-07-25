@@ -26,7 +26,11 @@ router.get("/add-staff",isLoggedIn,isAdmin, (req, res) => {
     error: null,
   });
 });
-
+router.get("/health",(req,res)=>{
+    return res.status(200).json({
+        message:"All is Ok "
+    })
+})
 router.post("/api/v1/register",isLoggedIn,isAdmin, registerUser);
 
 
