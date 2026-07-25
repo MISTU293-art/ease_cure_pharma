@@ -41,7 +41,11 @@ app.use(
   "/bootstrap-icons",
   express.static("node_modules/bootstrap-icons/font")
 );
-import allRoute from './routes/all.route.js';
-app.use('/',allRoute)
+import allRoute from './routes/auth.route.js';
+import staffRoute from './routes/staff.route.js';
+import dashboardRoute from './routes/dashboard.route.js'
+app.use('/',allRoute);
+app.use('/',staffRoute);
+app.use('/',dashboardRoute)
 
 export default app;

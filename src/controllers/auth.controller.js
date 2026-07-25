@@ -71,7 +71,7 @@ async function registerUser(req, res) {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.redirect("/");
+    return res.redirect("/staff-table");
   } catch (error) {
     console.error("Register Error:", error);
 
@@ -180,19 +180,6 @@ async function welcomeMessage(req, res) {
   }
 }
 
-async function allStaff(req,res) {
-  try{
-    const staffs= await userModel.find();
-    return res.render('all_staff',{
-      staffs
-    })
-  }
-  catch(error){
-    return res.render('login',{
-      error:"Internal Server Error"
-    })
-  }
-}
 
-export { logout };
-export { registerUser, loginUser, welcomeMessage,allStaff };
+
+export { registerUser, loginUser, welcomeMessage, logout };
