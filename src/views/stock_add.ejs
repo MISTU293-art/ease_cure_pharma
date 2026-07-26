@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Stock | Ease Cure Pharma</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+    <style>
+body{
+    background:#f4f7fc;
+    font-family:'Segoe UI',sans-serif;
+}
+
+/* Main Content */
+
+.main-content{
+    margin-left:270px;
+    padding:35px;
+}
+
+@media(max-width:992px){
+
+    .main-content{
+        margin-left:0;
+        padding:20px;
+        margin-top:70px;
+    }
+
+}
+
+.page-title{
+    color:#1E3A8A;
+    font-weight:700;
+}
+
+.card{
+
+    border:none;
+
+    border-radius:18px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+}
+
+.card-header{
+
+    background:#2563EB;
+
+    color:#fff;
+
+    padding:18px 25px;
+
+}
+
+.card-header h4{
+
+    margin:0;
+
+    font-size:22px;
+
+    font-weight:600;
+
+}
+
+.card-body{
+
+    padding:35px;
+
+}
+
+.form-label{
+
+    font-weight:600;
+
+    color:#374151;
+
+    margin-bottom:8px;
+
+}
+
+.form-control,
+.form-select{
+
+    height:48px;
+
+    border-radius:10px;
+
+    border:1px solid #d1d5db;
+
+}
+
+.form-control:focus,
+.form-select:focus{
+
+    border-color:#2563EB;
+
+    box-shadow:0 0 0 .15rem rgba(37,99,235,.2);
+
+}
+
+.required{
+
+    color:#dc3545;
+
+}
+
+.btn-save{
+
+    background:#2563EB;
+
+    color:#fff;
+
+    height:48px;
+
+    min-width:170px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+}
+
+.btn-save:hover{
+
+    background:#1E40AF;
+
+    color:#fff;
+
+}
+
+.btn-reset{
+
+    height:48px;
+
+    min-width:170px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+}
+        .required{
+            color:red;
+        }
+
+    </style>
+
+</head>
+<body>
+<%- include("./partials/sidebar.ejs") %>
+
+<div class="main-content">
+<% if(message){ %>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle-fill me-2"></i>
+    <%= message %>
+
+    <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert">
+    </button>
+</div>
+<% } %>
+
+<% if(error){ %>
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <%= error %>
+
+    <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert">
+    </button>
+</div>
+<% } %>
+    <div class="container-fluid">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h2 class="page-title">
+                    <i class="bi bi-capsule"></i>
+                    Add Medicine Stock(ওষুধের স্টক যোগ করুন)
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Add a new medicine to your inventory.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <h4>
+                    <i class="bi bi-box-seam me-2"></i>
+                    Stock Information(স্টকের তথ্য)
+                </h4>
+
+            </div>
+
+            <div class="card-body">
+
+                <form action="/stock/add" method="POST">
+
+                    <div class="row g-4">
+
+                        <div class="col-lg-6">
+                            <label class="form-label">Medicine Name(ওষুধের নাম) <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="name" placeholder="Paracetamol 500mg" required>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label class="form-label">Manufacturer(প্রস্তুতকারক কোম্পানি)</label>
+                            <input type="text" class="form-control" name="manufacturer" placeholder="Sun Pharma">
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label class="form-label">Category(বিভাগ)</label>
+
+                            <select class="form-select" name="category">
+
+                                <option value="medicine">Medicine(ওষুধ)</option>
+                                <option value="food">Food(খাদ্য)</option>
+                                <option value="utility">Utility(অন্যান্য)</option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label class="form-label">Batch Number(ব্যাচ নম্বর) <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="batchNumber" placeholder="Batch No.">
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label class="form-label">Quantity(পরিমাণ) <span class="required">*</span></label>
+                            <input type="number" class="form-control" name="quantity" placeholder="Enter Quantity" required>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label class="form-label">Supplier(সরবরাহকারী)</label>
+                            <input type="text" class="form-control" name="supplier" placeholder="Supplier Name">
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label class="form-label">Purchase Price(ক্রয় মূল্য) <span class="required">*</span></label>
+                            <input type="number" class="form-control" name="purchasePrice" placeholder="0.00" required>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label class="form-label">Selling Price (বিক্রয় মূল্য)<span class="required">*</span></label>
+                            <input type="number" class="form-control" name="sellingPrice" placeholder="0.00" required>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label class="form-label">Expiry Date (মেয়াদ শেষের তারিখ)<span class="required">*</span></label>
+                            <input type="date" class="form-control" name="expiryDate" required>
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-end gap-3">
+
+                        <button type="reset" class="btn btn-secondary btn-reset">
+                            <i class="bi bi-arrow-clockwise me-1"></i>
+                            Reset(রিসেট)
+                        </button>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i>
+                            Save Stock(স্টক সংরক্ষণ করুন)
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

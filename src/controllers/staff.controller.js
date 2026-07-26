@@ -15,6 +15,7 @@ async function allStaff(req, res) {
   }
 }
 
+
 async function staffProfile(req, res) {
   try {
     const _id = req.params._id;
