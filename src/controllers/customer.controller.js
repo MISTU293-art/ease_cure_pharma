@@ -214,23 +214,92 @@ async function generateBill(req, res) {
   }
 }
 
-async function getChatbotReply(message = "") {
-  const text = String(message || "").toLowerCase().trim();
+function normalizeChatbotText(value = "") {
+  return String(value || "").toLowerCase().trim();
+}
 
-  const [allStocks, allBills] = await Promise.all([
-    StockModel.find().lean(),
-    billingModel.find().sort({ createdAt: -1 }).lean(),
-  ]);
+function findBestMedicineMatch(text = "", stocks = []) {
+  const normalizedText = normalizeChatbotText(text).replace(/[^a-z0-9\s]/g, " ");
+  const words = normalizedText.split(/\s+/).filter(Boolean);
 
-  const stockCount = allStocks.length;
-  const lowStockItems = allStocks.filter((item) => Number(item.quantity || 0) <= 10);
-  const billCount = allBills.length;
-  const totalRevenue = allBills.reduce((sum, bill) => sum + Number(bill.amountPaid || 0), 0);
-  const latestBill = allBills[0];
-  const customerCount = new Set(allBills.map((bill) => bill.customer_name)).size;
+  if (!words.length || !stocks.length) {
+    return null;
+  }
+
+  const scoredMatches = stocks
+    .map((stock) => {
+      const stockName = String(stock.name || "").toLowerCase();
+      let score = 0;
+
+      if (stockName === normalizedText) {
+        score += 100;
+      }
+
+      if (stockName.includes(normalizedText)) {
+        score += 60;
+      }
+
+      words.forEach((word) => {
+        if (word.length < 2) {
+          return;
+        }
+
+        if (stockName.includes(word)) {
+          score += 12;
+        }
+      });
+
+      return { stock, score };
+    })
+    .filter((item) => item.score > 0)
+    .sort((left, right) => right.score - left.score);
+
+  return scoredMatches[0]?.stock || null;
+}
+
+function buildChatbotReply(message = "", data = {}) {
+  const text = normalizeChatbotText(message);
+  const stocks = Array.isArray(data.stocks) ? data.stocks : [];
+  const bills = Array.isArray(data.bills) ? data.bills : [];
+  const stockCount = stocks.length;
+  const lowStockItems = stocks.filter((item) => Number(item.quantity || 0) <= 10);
+  const billCount = bills.length;
+  const totalRevenue = bills.reduce((sum, bill) => sum + Number(bill.amountPaid || 0), 0);
+  const latestBill = bills[0];
+  const customerCount = new Set(bills.map((bill) => bill.customer_name)).size;
+  const medicineMatch = findBestMedicineMatch(text, stocks);
+
+  const salesByMedicine = new Map();
+  bills.forEach((bill) => {
+    (Array.isArray(bill.products) ? bill.products : []).forEach((product) => {
+      const name = String(product?.name || "").trim();
+      if (!name) {
+        return;
+      }
+
+      const key = name.toLowerCase();
+      const existing = salesByMedicine.get(key) || { name, quantity: 0, revenue: 0 };
+      existing.quantity += Number(product.quantity || 0);
+      existing.revenue += Number(product.total || 0);
+      salesByMedicine.set(key, existing);
+    });
+  });
 
   if (!text) {
     return `Hello! I can help with your pharmacy data.\nCurrent stock items: ${stockCount}\nBills created: ${billCount}\nTotal revenue: ₹ ${totalRevenue.toFixed(2)}\nআপনি আপনার ফার্মেসির তথ্য নিয়ে প্রশ্ন করতে পারেন।`;
+  }
+
+  if (medicineMatch && /(stock|quantity|available|left|in stock|inventory)/.test(text)) {
+    return `Medicine: ${medicineMatch.name}\nCurrent stock: ${medicineMatch.quantity} units\nSelling price: ₹ ${Number(medicineMatch.sellingPrice || 0).toFixed(2)}\nCategory: ${medicineMatch.category || "N/A"}\n\nওষুধ: ${medicineMatch.name}\nবর্তমান স্টক: ${medicineMatch.quantity} ইউনিট\nবিক্রয় মূল্য: ₹ ${Number(medicineMatch.sellingPrice || 0).toFixed(2)}`;
+  }
+
+  if (medicineMatch && /(price|cost|selling price|rate)/.test(text)) {
+    return `The selling price of ${medicineMatch.name} is ₹ ${Number(medicineMatch.sellingPrice || 0).toFixed(2)}.\n${medicineMatch.name} এর বিক্রয় মূল্য ₹ ${Number(medicineMatch.sellingPrice || 0).toFixed(2)}।`;
+  }
+
+  if (medicineMatch && /(sold|sales|revenue|income|earn)/.test(text)) {
+    const sales = salesByMedicine.get(medicineMatch.name.toLowerCase()) || { quantity: 0, revenue: 0 };
+    return `${medicineMatch.name} sold: ${sales.quantity} units\nRevenue from ${medicineMatch.name}: ₹ ${Number(sales.revenue || 0).toFixed(2)}\n\n${medicineMatch.name} বিক্রি হয়েছে: ${sales.quantity} ইউনিট\n${medicineMatch.name} থেকে আয়: ₹ ${Number(sales.revenue || 0).toFixed(2)}`;
   }
 
   if (/(low stock|below 10|need restock|restock|stock alert)/.test(text)) {
@@ -259,10 +328,22 @@ async function getChatbotReply(message = "") {
   }
 
   if (/(hello|hi|hey|help|what can you do)/.test(text)) {
-    return "Hello! I can help with billing, stock, customers, and staff. Try asking about bills, low stock, revenue, or customer count.\nনমস্কার! আমি বিলিং, স্টক, গ্রাহক ও কর্মী নিয়ে সাহায্য করতে পারি।";
+    return "Hello! I can help with billing, stock, customers, and staff. Try asking about a medicine, bills, low stock, revenue, or customer count.\nনমস্কার! আমি বিলিং, স্টক, গ্রাহক ও কর্মী নিয়ে সাহায্য করতে পারি।";
   }
 
-  return `I can answer using current pharmacy data.\nTry: “show low stock”, “how many bills”, “show revenue”, or “customer count”.\nআমি বর্তমান ডেটা ব্যবহার করে উত্তর দিতে পারি।`;
+  return `I can answer using current pharmacy data.\nTry: “show low stock”, “how many bills”, “show revenue”, “stock of paracetamol”, or “sales of amoxicillin”.\nআমি বর্তমান ডেটা ব্যবহার করে উত্তর দিতে পারি।`;
+}
+
+async function getChatbotReply(message = "") {
+  const [allStocks, allBills] = await Promise.all([
+    StockModel.find().lean(),
+    billingModel.find().sort({ createdAt: -1 }).lean(),
+  ]);
+
+  return buildChatbotReply(message, {
+    stocks: allStocks,
+    bills: allBills,
+  });
 }
 
 async function chatbotMessage(req, res) {
@@ -327,4 +408,4 @@ async function AllCustomer(req, res) {
   }
 }
 
-export { showBillingPage, generateBill, AllCustomer, chatbotMessage };
+export { showBillingPage, generateBill, AllCustomer, chatbotMessage, buildChatbotReply };
