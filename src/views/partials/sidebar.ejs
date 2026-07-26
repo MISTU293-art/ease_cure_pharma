@@ -342,15 +342,7 @@
           >
         </li>
 
-        <li>
-          <a href="#" class="nav-link"
-            ><i class="bi bi-gear"></i>
-            <span class="menu-text">
-              Settings
-              <small>সেটিংস</small>
-            </span></a
-          >
-        </li>
+
       </ul>
 
       <div class="logout">
@@ -384,67 +376,47 @@
         <ul class="nav flex-column p-3">
           <li>
             <a href="/dashboard" class="nav-link active"
-              ><i class="bi bi-speedometer2 me-2"></i>Dashboard</a
+              ><i class="bi bi-speedometer2 me-2"></i>Dashboard<small>ড্যাশবোর্ড</small></a
             >
           </li>
 
           <li>
             <a href="/billing" class="nav-link"
-              ><i class="bi bi-receipt me-2"></i>Billing</a
+              ><i class="bi bi-receipt me-2"></i>Billing<small>বিলিং</small></a
             >
           </li>
 
           <li>
             <a href="/customer" class="nav-link"
-              ><i class="bi bi-people me-2"></i>Customers</a
-            >
-          </li>
-
-          <li>
-            <a href="#" class="nav-link"
-              ><i class="bi bi-capsule me-2"></i>Medicines</a
-            >
-          </li>
-
-          <li>
-            <a href="#" class="nav-link"
-              ><i class="bi bi-grid me-2"></i>Categories</a
-            >
-          </li>
-
-          <li>
-            <a href="#" class="nav-link"
-              ><i class="bi bi-truck me-2"></i>Suppliers</a
-            >
-          </li>
-
-          <li>
-            <a href="#" class="nav-link"
-              ><i class="bi bi-cart-check me-2"></i>Purchase</a
+              ><i class="bi bi-people me-2"></i>Customers   <small>গ্রাহক</small></a
             >
           </li>
 
           <li>
             <a href="/stock-add" class="nav-link"
-              ><i class="bi bi-box-seam me-2"></i>Inventory</a
+              ><i class="bi bi-box-seam me-2"></i>Inventory <small>স্টক এন্ট্রি</small></a
             >
           </li>
+          
+        <li>
+          <a href="/stock" class="nav-link"
+            ><i class="bi bi-capsule"></i>
+            <span class="menu-text">
+              Medicines
+              <small>ওষুধ</small>
+            </span></a
+          >
+        </li>
 
           <li>
             <a href="/add-staff" class="nav-link"
-              ><i class="bi bi-person-badge me-2"></i> Register Staff</a
+              ><i class="bi bi-person-badge me-2"></i> Register Staff <small>কর্মচারী নিবন্ধন</small></a
             >
           </li>
 
           <li>
             <a href="/staff-table" class="nav-link"
-              ><i class="bi bi-bar-chart me-2"></i>Staff Details</a
-            >
-          </li>
-
-          <li>
-            <a href="#" class="nav-link"
-              ><i class="bi bi-gear me-2"></i>Settings</a
+              ><i class="bi bi-bar-chart me-2"></i>Staff Details     <small>কর্মচারী তালিকা</small></a
             >
           </li>
         </ul>
@@ -466,11 +438,15 @@
           <i class="bi bi-robot me-2"></i>Pharma Assistant
         </div>
         <div class="chatbot-messages" id="chatbotMessages">
-          <div class="chatbot-message bot">Hello! I can help with billing, stock, customers, and staff. 😊</div>
+          <div class="chatbot-message bot">
+            Hello! I can help with billing, stock, customers, and staff. 😊
+          </div>
         </div>
         <div class="chatbot-footer">
           <input id="chatbotInput" type="text" placeholder="Ask something..." />
-          <button id="chatbotSend" type="button"><i class="bi bi-send"></i></button>
+          <button id="chatbotSend" type="button">
+            <i class="bi bi-send"></i>
+          </button>
         </div>
       </div>
       <button class="chatbot-toggle" id="chatbotToggle" type="button">
@@ -480,48 +456,54 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      const chatbotToggle = document.getElementById('chatbotToggle');
-      const chatbotPanel = document.getElementById('chatbotPanel');
-      const chatbotMessages = document.getElementById('chatbotMessages');
-      const chatbotInput = document.getElementById('chatbotInput');
-      const chatbotSend = document.getElementById('chatbotSend');
+      const chatbotToggle = document.getElementById("chatbotToggle");
+      const chatbotPanel = document.getElementById("chatbotPanel");
+      const chatbotMessages = document.getElementById("chatbotMessages");
+      const chatbotInput = document.getElementById("chatbotInput");
+      const chatbotSend = document.getElementById("chatbotSend");
 
-      chatbotToggle?.addEventListener('click', () => {
-        chatbotPanel?.classList.toggle('open');
+      chatbotToggle?.addEventListener("click", () => {
+        chatbotPanel?.classList.toggle("open");
       });
 
-      function addMessage(text, type = 'bot') {
-        const div = document.createElement('div');
+      function addMessage(text, type = "bot") {
+        const div = document.createElement("div");
         div.className = `chatbot-message ${type}`;
         div.textContent = text;
         chatbotMessages?.appendChild(div);
-        chatbotMessages?.scrollTo({ top: chatbotMessages.scrollHeight, behavior: 'smooth' });
+        chatbotMessages?.scrollTo({
+          top: chatbotMessages.scrollHeight,
+          behavior: "smooth",
+        });
       }
 
       async function sendChatbotMessage() {
         const message = chatbotInput?.value?.trim();
         if (!message) return;
 
-        addMessage(message, 'user');
-        chatbotInput.value = '';
+        addMessage(message, "user");
+        chatbotInput.value = "";
 
         try {
-          const response = await fetch('/chatbot/message', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message })
+          const response = await fetch("/chatbot/message", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message }),
           });
 
           const data = await response.json();
-          addMessage(data.reply || 'Sorry, I could not answer right now.', 'bot');
+          addMessage(
+            data.reply || "Sorry, I could not answer right now.",
+            "bot",
+          );
         } catch (error) {
-          addMessage('Sorry, I could not answer right now.', 'bot');
+          addMessage("Sorry, I could not answer right now.", "bot");
         }
       }
 
-      chatbotSend?.addEventListener('click', sendChatbotMessage);
-      chatbotInput?.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
+      chatbotSend?.addEventListener("click", sendChatbotMessage);
+      chatbotInput?.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
           event.preventDefault();
           sendChatbotMessage();
         }
