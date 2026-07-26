@@ -13,6 +13,8 @@
         .content-wrapper {
             margin-left: 250px;
             padding: 24px;
+            width: calc(100% - 250px);
+            box-sizing: border-box;
         }
 
         .page-card {
@@ -20,6 +22,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
             padding: 24px;
+            overflow-x: auto;
         }
 
         .page-title {
@@ -46,6 +49,39 @@
             border-radius: 999px;
             font-size: 0.9rem;
             font-weight: 600;
+        }
+
+        @media (max-width: 992px) {
+            .content-wrapper {
+                margin-left: 0;
+                width: 100%;
+                padding: 16px;
+            }
+
+            .page-card {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .page-title {
+                font-size: 1.1rem;
+            }
+
+            .page-subtitle {
+                font-size: 0.95rem;
+            }
+
+            .badge-soft {
+                width: 100%;
+                text-align: center;
+            }
+
+            .table th,
+            .table td {
+                font-size: 0.9rem;
+                white-space: nowrap;
+            }
         }
     </style>
 </head>

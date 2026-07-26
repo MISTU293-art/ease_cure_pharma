@@ -3,6 +3,7 @@ import StockModel from "../models/stock.models.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import loggerModel from "../models/logger.model.js";
+import { normalizeLoginInput } from "../utils/auth.utils.js";
 
 const cookieOptions = {
   httpOnly: true,
@@ -86,14 +87,15 @@ async function registerUser(req, res) {
 async function loginUser(req, res) {
   try {
     const { email, password } = req.body;
+    const normalized = normalizeLoginInput(email, password);
 
-    if (!email || !password) {
+    if (!normalized.valid) {
       return res.render("login", {
-        error: "Please enter email and password.",
+        error: normalized.error,
       });
     }
 
-    const user = await userModel.findOne({ email });
+    const user = await userModel.findOne({ email: normalized.email });
 
     if (!user) {
       return res.render("login", {
@@ -101,7 +103,7 @@ async function loginUser(req, res) {
       });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(normalized.password, user.password);
 
     if (!isPasswordValid) {
       return res.render("login", {
@@ -141,18 +143,25 @@ async function loginUser(req, res) {
 
     res.cookie("refreshToken", refreshToken, {
       ...cookieOptions,
-      maxAge:24 * 60 * 60 * 1000,
+      maxAge: 24 * 60 * 60 * 1000,
     });
-    const ip = req.socket.remoteAddress;
-    const logger= await loggerModel.create({
-      user:user._id,ip:ip
+
+    const ip =
+      req.headers["x-forwarded-for"]?.split(",")[0] ||
+      req.socket.remoteAddress ||
+      "unknown";
+
+    await loggerModel.create({
+      user: user._id,
+      ip,
     });
+
     return res.redirect("/dashboard");
   } catch (error) {
     console.error("Login Error:", error);
 
     return res.render("login", {
-      error: "Internal Server Error. Please try again.",
+      error: "Unable to sign in right now. Please try again.",
     });
   }
 }

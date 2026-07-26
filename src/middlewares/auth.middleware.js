@@ -12,7 +12,6 @@ async function isLoggedIn(req, res, next) {
 
     const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
     req.user = decoded;
-    console.log(decoded);
     next()
   } catch (error) {
     return res.render("login", {
