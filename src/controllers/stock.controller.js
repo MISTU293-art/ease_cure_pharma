@@ -45,12 +45,25 @@ async function AllStocks(req, res) {
   try {
     const page = Math.max(parseInt(req.query.page) || 1, 1);
     const limit = 10;
+    const search = (req.query.search || "").trim();
 
-    const totalStocks = await StockModel.countDocuments();
+    const query = search
+      ? {
+          $or: [
+            { name: { $regex: search, $options: "i" } },
+            { manufacturer: { $regex: search, $options: "i" } },
+            { category: { $regex: search, $options: "i" } },
+            { batchNumber: { $regex: search, $options: "i" } },
+            { supplier: { $regex: search, $options: "i" } },
+          ],
+        }
+      : {};
+
+    const totalStocks = await StockModel.countDocuments(query);
     const totalPages = totalStocks === 0 ? 1 : Math.ceil(totalStocks / limit);
     const safePage = Math.min(page, totalPages);
 
-    const stocks = await StockModel.find()
+    const stocks = await StockModel.find(query)
       .sort({ createdAt: -1 })
       .skip((safePage - 1) * limit)
       .limit(limit);
@@ -63,6 +76,7 @@ async function AllStocks(req, res) {
       totalPages,
       totalStocks,
       limit,
+      search,
     });
   } catch (error) {
     console.log(error);

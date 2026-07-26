@@ -209,14 +209,16 @@ Medicine List / ওষুধের তালিকা
 
 <div class="col-md-6">
 
-<form class="d-flex">
+<form class="d-flex" method="GET" action="/stock">
 
 <input
-type="text"
-class="form-control search-box me-2"
-placeholder="ওষুধের নাম লিখুন...">
+    type="text"
+    name="search"
+    class="form-control search-box me-2"
+    placeholder="ওষুধ/কোম্পানি/ব্যাচ লিখুন..."
+    value="<%= typeof search !== 'undefined' ? search : '' %>">
 
-<button class="btn btn-light">
+<button class="btn btn-light" type="submit">
 
 <i class="bi bi-search"></i>
 
@@ -363,7 +365,11 @@ onclick="return confirm('আপনি কি নিশ্চিত?')">
 <div class="d-flex justify-content-between align-items-center mt-3">
 
 <p class="text-muted mb-0">
-    Showing <%= stocks.length %> medicines on page <%= currentPage %> of <%= totalPages %>
+    <% if(typeof search !== 'undefined' && search){ %>
+        Showing <%= stocks.length %> result(s) for "<%= search %>" on page <%= currentPage %> of <%= totalPages %>
+    <% } else { %>
+        Showing <%= stocks.length %> medicines on page <%= currentPage %> of <%= totalPages %>
+    <% } %>
 </p>
 
 <% if(typeof totalPages !== 'undefined' && totalPages > 1){ %>
@@ -373,19 +379,19 @@ onclick="return confirm('আপনি কি নিশ্চিত?')">
     <ul class="pagination pagination-sm mb-0">
 
         <li class="page-item <%= currentPage <= 1 ? 'disabled' : '' %>">
-            <a class="page-link" href="/stock?page=<%= currentPage - 1 %>">Previous</a>
+            <a class="page-link" href="/stock?<%= typeof search !== 'undefined' && search ? 'search=' + encodeURIComponent(search) + '&' : '' %>page=<%= currentPage - 1 %>">Previous</a>
         </li>
 
         <% for(let i = 1; i <= totalPages; i++){ %>
 
         <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-            <a class="page-link" href="/stock?page=<%= i %>"><%= i %></a>
+            <a class="page-link" href="/stock?<%= typeof search !== 'undefined' && search ? 'search=' + encodeURIComponent(search) + '&' : '' %>page=<%= i %>"><%= i %></a>
         </li>
 
         <% } %>
 
         <li class="page-item <%= currentPage >= totalPages ? 'disabled' : '' %>">
-            <a class="page-link" href="/stock?page=<%= currentPage + 1 %>">Next</a>
+            <a class="page-link" href="/stock?<%= typeof search !== 'undefined' && search ? 'search=' + encodeURIComponent(search) + '&' : '' %>page=<%= currentPage + 1 %>">Next</a>
         </li>
 
     </ul>

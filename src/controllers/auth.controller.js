@@ -1,4 +1,5 @@
 import userModel from "../models/user.models.js";
+import StockModel from "../models/stock.models.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -168,12 +169,30 @@ async function logout(req, res) {
 
 async function welcomeMessage(req, res) {
   try {
-    const _id = req.user;
-    const user = await userModel.findById(_id);
+    const userId = req.user?._id;
+    const user = await userModel.findById(userId);
+
+    const allStocks = await StockModel.find();
+    const totalMedicines = allStocks.length;
+    const lowStockCount = allStocks.filter((stock) => Number(stock.quantity) <= 10).length;
+
+    const totalStaff = await userModel.countDocuments({ role: { $ne: "admin" } });
+    const totalUsers = await userModel.countDocuments();
+    const recentStaff = await userModel.find().sort({ createdAt: -1 }).limit(5);
+    const stockSummary = await StockModel.find().sort({ createdAt: -1 }).limit(5);
+
     return res.render("dashboard", {
       user,
+      totalMedicines,
+      lowStockCount,
+      totalStaff,
+      totalUsers,
+      recentStaff,
+      stockSummary,
+      error: null,
     });
   } catch (error) {
+    console.error(error);
     return res.render("login", {
       error: "Internal Server Error",
     });
