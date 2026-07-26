@@ -45,9 +45,11 @@ import allRoute from './routes/auth.route.js';
 import staffRoute from './routes/staff.route.js';
 import dashboardRoute from './routes/dashboard.route.js';
 import stockRoute from './routes/stock.route.js';
+import billingRoute from './routes/billing.route.js';
 app.use('/',allRoute);
 app.use('/',staffRoute);
 app.use('/',dashboardRoute);
-app.use('/',stockRoute)
+app.use('/',stockRoute);
+app.use('/',billingRoute);
 
 export default app;
