@@ -114,22 +114,45 @@
       }
 
       .offcanvas {
-        width: 280px;
+        width: 290px;
+      }
+
+      .offcanvas-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
       }
 
       .offcanvas .nav-link {
         color: #1e3a8a;
         padding: 12px 14px;
-        border-radius: 10px;
+        border-radius: 12px;
         margin-bottom: 6px;
         display: flex;
         align-items: center;
         gap: 10px;
+        text-decoration: none;
+        transition: 0.3s;
+      }
+
+      .offcanvas .nav-link .menu-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+      }
+
+      .offcanvas .nav-link .menu-text small {
+        font-size: 0.72rem;
+        color: #64748b;
+        margin-top: 2px;
       }
 
       .offcanvas .nav-link:hover,
       .offcanvas .nav-link.active {
         background: #dbeafe;
+        color: #1d4ed8;
+      }
+
+      .offcanvas .nav-link:hover .menu-text small,
+      .offcanvas .nav-link.active .menu-text small {
         color: #1d4ed8;
       }
 
@@ -255,7 +278,7 @@
 
         <span class="fw-bold text-primary d-flex align-items-center gap-2">
           <i class="bi bi-capsule-pill fs-5"></i>
-          <span>Ease Cure Pharma</span>
+          <span>ইজ কিউর ফার্মা</span>
         </span>
       </div>
     </nav>
@@ -368,10 +391,9 @@
 
     <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
       <div class="offcanvas-header bg-primary text-white">
-        <h5>
+        <h5 class="mb-0 d-flex align-items-center gap-2">
           <i class="bi bi-capsule-pill"></i>
-
-          Ease Cure Pharma
+          <span>ইজ কিউর ফার্মা</span>
         </h5>
 
         <button
@@ -383,68 +405,82 @@
       <div class="offcanvas-body p-0">
         <ul class="nav flex-column p-3">
           <li>
-            <a href="/dashboard" class="nav-link active"
-              ><i class="bi bi-speedometer2 me-2"></i>Dashboard</a
+            <a href="/dashboard" class="nav-link active" data-bs-dismiss="offcanvas"
+              ><i class="bi bi-speedometer2"></i>
+              <span class="menu-text">
+                Dashboard
+                <small>ড্যাশবোর্ড</small>
+              </span></a
             >
           </li>
 
           <li>
-            <a href="/billing" class="nav-link"
-              ><i class="bi bi-receipt me-2"></i>Billing</a
+            <a href="/billing" class="nav-link" data-bs-dismiss="offcanvas"
+              ><i class="bi bi-receipt"></i>
+              <span class="menu-text">
+                Billing
+                <small>বিলিং</small>
+              </span></a
             >
           </li>
 
           <li>
-            <a href="/customer" class="nav-link"
-              ><i class="bi bi-people me-2"></i>Customers</a
+            <a href="/customer" class="nav-link" data-bs-dismiss="offcanvas"
+              ><i class="bi bi-people"></i>
+              <span class="menu-text">
+                Customers
+                <small>গ্রাহক</small>
+              </span></a
             >
           </li>
 
           <li>
-            <a href="#" class="nav-link"
-              ><i class="bi bi-capsule me-2"></i>Medicines</a
+            <a href="/stock" class="nav-link" data-bs-dismiss="offcanvas"
+              ><i class="bi bi-capsule"></i>
+              <span class="menu-text">
+                Medicines
+                <small>ওষুধ</small>
+              </span></a
             >
           </li>
 
           <li>
-            <a href="#" class="nav-link"
-              ><i class="bi bi-grid me-2"></i>Categories</a
+            <a href="/stock-add" class="nav-link" data-bs-dismiss="offcanvas"
+              ><i class="bi bi-box-seam"></i>
+              <span class="menu-text">
+                Stock Entry
+                <small>স্টক এন্ট্রি</small>
+              </span></a
             >
           </li>
 
           <li>
-            <a href="#" class="nav-link"
-              ><i class="bi bi-truck me-2"></i>Suppliers</a
+            <a href="/add-staff" class="nav-link" data-bs-dismiss="offcanvas"
+              ><i class="bi bi-person-badge"></i>
+              <span class="menu-text">
+                Staff Register
+                <small>কর্মচারী নিবন্ধন</small>
+              </span></a
             >
           </li>
 
           <li>
-            <a href="#" class="nav-link"
-              ><i class="bi bi-cart-check me-2"></i>Purchase</a
+            <a href="/staff-table" class="nav-link" data-bs-dismiss="offcanvas"
+              ><i class="bi bi-people-fill"></i>
+              <span class="menu-text">
+                Staff List
+                <small>কর্মচারী তালিকা</small>
+              </span></a
             >
           </li>
 
           <li>
-            <a href="/stock-add" class="nav-link"
-              ><i class="bi bi-box-seam me-2"></i>Inventory</a
-            >
-          </li>
-
-          <li>
-            <a href="/add-staff" class="nav-link"
-              ><i class="bi bi-person-badge me-2"></i> Register Staff</a
-            >
-          </li>
-
-          <li>
-            <a href="/staff-table" class="nav-link"
-              ><i class="bi bi-bar-chart me-2"></i>Staff Details</a
-            >
-          </li>
-
-          <li>
-            <a href="#" class="nav-link"
-              ><i class="bi bi-gear me-2"></i>Settings</a
+            <a href="#" class="nav-link" data-bs-dismiss="offcanvas"
+              ><i class="bi bi-gear"></i>
+              <span class="menu-text">
+                Settings
+                <small>সেটিংস</small>
+              </span></a
             >
           </li>
         </ul>
