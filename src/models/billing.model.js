@@ -36,6 +36,20 @@ const BillingSchema = new mongoose.Schema(
     quantity: {
       type: String,
     },
+    products: {
+      type: [
+        {
+          stockId: mongoose.Schema.Types.ObjectId,
+          name: String,
+          manufacturer: String,
+          category: String,
+          quantity: Number,
+          unitPrice: Number,
+          total: Number,
+        },
+      ],
+      default: [],
+    },
   },
   {
     timestamps: true,

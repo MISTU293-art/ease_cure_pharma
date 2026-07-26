@@ -28,6 +28,19 @@
       background: linear-gradient(135deg, #2563EB, #1d4ed8);
       color: #fff;
     }
+    .search-box {
+      border-radius: 999px;
+      border: 1px solid #dbeafe;
+      padding: 10px 15px;
+    }
+    .bill-badge {
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
     .table thead {
       background: #eff6ff;
       color: #1e3a8a;
@@ -106,16 +119,26 @@
       <% } %>
 
       <div class="card">
-        <div class="card-header p-4">
+        <div class="card-header p-4 d-flex justify-content-between align-items-center">
           <h5 class="mb-0"><i class="bi bi-person-lines-fill me-2"></i>Customer List</h5>
+          <div class="text-white-50 small">Search by customer, bill ID, or contact</div>
         </div>
         <div class="card-body">
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <input id="customerSearch" type="text" class="form-control search-box" placeholder="Search customer, bill, phone..." />
+            </div>
+            <div class="col-md-6 text-md-end">
+              <span class="text-muted">Showing <strong id="visibleCount"><%= customers && customers.length ? customers.length : 0 %></strong> record(s)</span>
+            </div>
+          </div>
           <div class="table-responsive">
             <table class="table table-hover align-middle">
               <thead>
                 <tr>
                   <th>#</th>
                   <th>Customer</th>
+                  <th>Bill</th>
                   <th>Contact</th>
                   <th>Purchased Item</th>
                   <th>Qty</th>
@@ -123,6 +146,7 @@
                   <th>Payment</th>
                   <th>Seller</th>
                   <th>Date</th>
+                  <th>Receipt</th>
                 </tr>
               </thead>
               <tbody>
@@ -135,6 +159,9 @@
                         <small class="text-muted"><%= customer.address || 'N/A' %></small>
                       </td>
                       <td>
+                        <span class="bill-badge"><%= customer.bill_id || 'N/A' %></span>
+                      </td>
+                      <td>
                         <i class="bi bi-phone me-1"></i><%= customer.mobile || 'N/A' %>
                       </td>
                       <td>
@@ -145,11 +172,20 @@
                       <td><%= customer.paymentMode || 'N/A' %></td>
                       <td><%= customer.seller || 'Ease Cure Pharma' %></td>
                       <td><%= customer.lastPurchase || 'No purchase yet' %></td>
+                      <td>
+                        <% if (customer.bill_id) { %>
+                          <a href="/bills/<%= customer.bill_id %>.pdf" class="btn btn-sm btn-outline-primary" target="_blank">
+                            <i class="bi bi-download me-1"></i>PDF
+                          </a>
+                        <% } else { %>
+                          <span class="text-muted">—</span>
+                        <% } %>
+                      </td>
                     </tr>
                   <% }) %>
                 <% } else { %>
                   <tr>
-                    <td colspan="9" class="text-center text-muted py-4">
+                    <td colspan="11" class="text-center text-muted py-4">
                       No customer records found yet. Generate a bill first to create customer data.
                     </td>
                   </tr>
@@ -163,5 +199,27 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const searchInput = document.getElementById('customerSearch');
+    const visibleCount = document.getElementById('visibleCount');
+    const rows = Array.from(document.querySelectorAll('tbody tr'));
+
+    function filterRows() {
+      const query = (searchInput?.value || '').toLowerCase().trim();
+      let visible = 0;
+
+      rows.forEach((row) => {
+        const text = row.textContent.toLowerCase();
+        const shouldShow = !query || text.includes(query);
+        row.style.display = shouldShow ? '' : 'none';
+        if (shouldShow) visible += 1;
+      });
+
+      if (visibleCount) visibleCount.textContent = visible;
+    }
+
+    searchInput?.addEventListener('input', filterRows);
+    filterRows();
+  </script>
 </body>
 </html>

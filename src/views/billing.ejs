@@ -44,9 +44,18 @@
             <h5 class="text-success"><i class="bi bi-receipt me-2"></i>Bill Created Successfully</h5>
             <p class="mb-2"><strong>Bill ID:</strong> <%= lastBill.bill_id %></p>
             <p class="mb-2"><strong>Customer:</strong> <%= lastBill.customer_name %></p>
-            <p class="mb-2"><strong>Medicine:</strong> <%= lastBill.medicine %></p>
-            <p class="mb-2"><strong>Quantity:</strong> <%= lastBill.quantity %></p>
-            <p class="mb-2"><strong>Unit Price:</strong> ₹ <%= lastBill.unitPrice %></p>
+            <% if (lastBill.items && lastBill.items.length) { %>
+              <p class="mb-2"><strong>Items:</strong></p>
+              <ul class="mb-2 ps-3">
+                <% lastBill.items.forEach((item) => { %>
+                  <li><%= item.name %> × <%= item.quantity %> = ₹ <%= item.total %></li>
+                <% }) %>
+              </ul>
+            <% } else { %>
+              <p class="mb-2"><strong>Medicine:</strong> <%= lastBill.medicine %></p>
+              <p class="mb-2"><strong>Quantity:</strong> <%= lastBill.quantity %></p>
+              <p class="mb-2"><strong>Unit Price:</strong> ₹ <%= lastBill.unitPrice %></p>
+            <% } %>
             <p class="mb-2"><strong>Total:</strong> ₹ <%= lastBill.total %></p>
             <div class="d-flex gap-2">
               <a href="/bills/<%= lastBill.bill_id %>.pdf" class="btn btn-success" target="_blank"><i class="bi bi-download me-2"></i>Download PDF</a>
@@ -85,20 +94,32 @@
                       <option value="Mobile Banking">Mobile Banking</option>
                     </select>
                   </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Medicine</label>
-                    <select name="stockId" class="form-select" required>
-                      <% stocks.forEach((stock) => { %>
-                        <option value="<%= stock._id %>"><%= stock.name %> - <%= stock.manufacturer %></option>
-                      <% }) %>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Quantity</label>
-                    <input type="number" name="quantity" class="form-control" min="1" value="1" required />
+                  <div class="col-12">
+                    <label class="form-label">Products</label>
+                    <div id="productRows" class="d-flex flex-column gap-2"></div>
+                    <button type="button" id="addProductBtn" class="btn btn-outline-primary btn-sm mt-2"><i class="bi bi-plus-circle me-2"></i>Add Another Product</button>
                   </div>
                   <div class="col-12">
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-printer me-2"></i>Create Bill</button>
+                    <div class="border rounded-3 p-3 bg-light">
+                      <div class="row g-3 align-items-center">
+                        <div class="col-md-4">
+                          <small class="text-muted d-block">Items</small>
+                          <strong id="itemCountText">0</strong>
+                        </div>
+                        <div class="col-md-4">
+                          <small class="text-muted d-block">Total Payable</small>
+                          <strong id="totalPriceText" class="text-primary">₹ 0</strong>
+                        </div>
+                        <div class="col-md-4">
+                          <small class="text-muted d-block">Customer Pays</small>
+                          <strong id="payableAmountText" class="text-success">₹ 0</strong>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <input type="hidden" name="totalAmount" id="totalAmountInput" value="0" />
+                    <button type="submit" class="btn btn-primary" id="submitBillBtn"><i class="bi bi-printer me-2"></i>Create Bill</button>
                   </div>
                 </div>
               </form>
@@ -139,6 +160,98 @@
     </div>
   </div>
 
+  <div id="stockOptionsTemplate" class="d-none">
+    <% stocks.forEach((stock) => { %>
+      <option value="<%= stock._id %>" data-price="<%= stock.sellingPrice %>"><%= stock.name %> - <%= stock.manufacturer %></option>
+    <% }) %>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const productRows = document.getElementById("productRows");
+    const addProductBtn = document.getElementById("addProductBtn");
+    const totalPriceText = document.getElementById("totalPriceText");
+    const payableAmountText = document.getElementById("payableAmountText");
+    const totalAmountInput = document.getElementById("totalAmountInput");
+    const itemCountText = document.getElementById("itemCountText");
+    const submitBillBtn = document.getElementById("submitBillBtn");
+    const stockOptionsMarkup = document.getElementById("stockOptionsTemplate").innerHTML;
+
+    function formatAmount(value) {
+      return `₹ ${Number(value || 0).toLocaleString("en-IN")}`;
+    }
+
+    function createProductRow() {
+      const row = document.createElement("div");
+      row.className = "row g-2 align-items-end border rounded-3 p-2 bg-white";
+      row.innerHTML = `
+        <div class="col-md-7">
+          <label class="form-label small">Product</label>
+          <select name="stockId" class="form-select product-select" required>${stockOptionsMarkup}</select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small">Quantity</label>
+          <input type="number" name="quantity" class="form-control quantity-input" min="1" value="1" required />
+        </div>
+        <div class="col-md-2">
+          <button type="button" class="btn btn-outline-danger w-100 remove-product-btn">Remove</button>
+        </div>
+        <div class="col-12">
+          <small class="text-muted line-total-text">Line total: ₹ 0</small>
+        </div>
+      `;
+
+      row.querySelector(".remove-product-btn").addEventListener("click", () => {
+        row.remove();
+        updateSummary();
+      });
+
+      row.querySelector(".product-select").addEventListener("change", updateSummary);
+      row.querySelector(".quantity-input").addEventListener("input", updateSummary);
+
+      return row;
+    }
+
+    function updateSummary() {
+      const rows = productRows.querySelectorAll(".row");
+      let total = 0;
+      let itemCount = 0;
+
+      rows.forEach((row) => {
+        const select = row.querySelector(".product-select");
+        const input = row.querySelector(".quantity-input");
+        const lineTotalText = row.querySelector(".line-total-text");
+
+        const unitPrice = Number(select?.selectedOptions[0]?.dataset.price || 0);
+        const quantity = Number(input?.value || 1);
+        const lineTotal = unitPrice * quantity;
+
+        lineTotalText.textContent = `Line total: ${formatAmount(lineTotal)}`;
+        total += lineTotal;
+        itemCount += quantity;
+      });
+
+      totalPriceText.textContent = formatAmount(total);
+      payableAmountText.textContent = formatAmount(total);
+      totalAmountInput.value = total.toFixed(2);
+      itemCountText.textContent = itemCount;
+    }
+
+    addProductBtn.addEventListener("click", () => {
+      productRows.appendChild(createProductRow());
+      updateSummary();
+    });
+
+    const billingForm = document.querySelector("form");
+    if (billingForm && submitBillBtn) {
+      billingForm.addEventListener("submit", () => {
+        submitBillBtn.disabled = true;
+        submitBillBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Creating...';
+      });
+    }
+
+    productRows.appendChild(createProductRow());
+    updateSummary();
+  </script>
 </body>
 </html>
