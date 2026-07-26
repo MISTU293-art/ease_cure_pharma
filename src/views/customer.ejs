@@ -76,7 +76,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <h6 class="text-muted mb-1">Total Customers</h6>
-                <h3 class="mb-0"><%= customers && customers.length ? customers.length : 0 %></h3>
+                <h3 class="mb-0"><%= totalCustomers || 0 %></h3>
               </div>
               <div class="bg-primary text-white rounded-circle p-3">
                 <i class="bi bi-people-fill fs-4"></i>
@@ -90,7 +90,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <h6 class="text-muted mb-1">Recent Orders</h6>
-                <h3 class="mb-0"><%= customers && customers.length ? customers.length : 0 %></h3>
+                <h3 class="mb-0"><%= totalCustomers || 0 %></h3>
               </div>
               <div class="bg-success text-white rounded-circle p-3">
                 <i class="bi bi-bag-check-fill fs-4"></i>
@@ -104,7 +104,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <h6 class="text-muted mb-1">Active Contacts</h6>
-                <h3 class="mb-0"><%= customers && customers.length ? customers.length : 0 %></h3>
+                <h3 class="mb-0"><%= totalCustomers || 0 %></h3>
               </div>
               <div class="bg-warning text-dark rounded-circle p-3">
                 <i class="bi bi-phone-fill fs-4"></i>
@@ -129,7 +129,7 @@
               <input id="customerSearch" type="text" class="form-control search-box" placeholder="Search customer, bill, phone..." />
             </div>
             <div class="col-md-6 text-md-end">
-              <span class="text-muted">Showing <strong id="visibleCount"><%= customers && customers.length ? customers.length : 0 %></strong> record(s)</span>
+              <span class="text-muted">Showing <strong id="visibleCount"><%= customers && customers.length ? customers.length : 0 %></strong> of <strong><%= totalCustomers || 0 %></strong> record(s)</span>
             </div>
           </div>
           <div class="table-responsive">
@@ -153,7 +153,7 @@
                 <% if (customers && customers.length > 0) { %>
                   <% customers.forEach((customer, index) => { %>
                     <tr>
-                      <td><%= index + 1 %></td>
+                      <td><%= ((currentPage || 1) - 1) * (pageSize || 10) + index + 1 %></td>
                       <td>
                         <strong><%= customer.customer_name || customer.name || 'N/A' %></strong><br />
                         <small class="text-muted"><%= customer.address || 'N/A' %></small>
@@ -193,6 +193,23 @@
               </tbody>
             </table>
           </div>
+
+          <nav aria-label="Customer list pagination" class="mt-4">
+            <ul class="pagination justify-content-center mb-0">
+              <li class="page-item <%= (currentPage || 1) <= 1 ? 'disabled' : '' %>">
+                <a class="page-link" href="/customer?page=<%= Math.max((currentPage || 1) - 1, 1) %>&limit=<%= pageSize %>">Previous</a>
+              </li>
+              <% for (let page = 1; page <= totalPages; page += 1) { %>
+                <li class="page-item <%= page === (currentPage || 1) ? 'active' : '' %>">
+                  <a class="page-link" href="/customer?page=<%= page %>&limit=<%= pageSize %>"><%= page %></a>
+                </li>
+              <% } %>
+              <li class="page-item <%= (currentPage || 1) >= totalPages ? 'disabled' : '' %>">
+                <a class="page-link" href="/customer?page=<%= Math.min((currentPage || 1) + 1, totalPages) %>&limit=<%= pageSize %>">Next</a>
+              </li>
+            </ul>
+          </nav>
+
         </div>
       </div>
     </div>

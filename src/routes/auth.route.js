@@ -5,7 +5,7 @@ import {
   logout
 } from "../controllers/auth.controller.js";
 import { isLoggedIn } from "../middlewares/auth.middleware.js";
-
+import { isAdmin } from "../middlewares/permission.middleware.js";
 const router = express.Router();
 // Login
 router.get("/", (req, res) => {
@@ -22,5 +22,6 @@ router.get("/health",(req,res)=>{
     return res.status(200).json({
         message:"All is Ok "
     })
-})
+});
+
 export default router;

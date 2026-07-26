@@ -2,6 +2,7 @@ import userModel from "../models/user.models.js";
 import StockModel from "../models/stock.models.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import loggerModel from "../models/logger.model.js";
 
 const cookieOptions = {
   httpOnly: true,
@@ -140,9 +141,12 @@ async function loginUser(req, res) {
 
     res.cookie("refreshToken", refreshToken, {
       ...cookieOptions,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge:24 * 60 * 60 * 1000,
     });
-
+    const ip = req.socket.remoteAddress;
+    const logger= await loggerModel.create({
+      user:user._id,ip:ip
+    });
     return res.redirect("/dashboard");
   } catch (error) {
     console.error("Login Error:", error);
@@ -174,12 +178,18 @@ async function welcomeMessage(req, res) {
 
     const allStocks = await StockModel.find();
     const totalMedicines = allStocks.length;
-    const lowStockCount = allStocks.filter((stock) => Number(stock.quantity) <= 10).length;
+    const lowStockCount = allStocks.filter(
+      (stock) => Number(stock.quantity) <= 10,
+    ).length;
 
-    const totalStaff = await userModel.countDocuments({ role: { $ne: "admin" } });
+    const totalStaff = await userModel.countDocuments({
+      role: { $ne: "admin" },
+    });
     const totalUsers = await userModel.countDocuments();
     const recentStaff = await userModel.find().sort({ createdAt: -1 }).limit(5);
-    const stockSummary = await StockModel.find().sort({ createdAt: -1 }).limit(5);
+    const stockSummary = await StockModel.find()
+      .sort({ createdAt: -1 })
+      .limit(5);
 
     return res.render("dashboard", {
       user,
@@ -198,7 +208,5 @@ async function welcomeMessage(req, res) {
     });
   }
 }
-
-
 
 export { registerUser, loginUser, welcomeMessage, logout };

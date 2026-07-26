@@ -9,6 +9,9 @@ import {
   allStaff,
   staffProfile,
   deleteStaff,
+  resetPassword,
+  profile,
+  staffLoginDetails,
 } from "../controllers/staff.controller.js";
 import { isLoggedIn } from "../middlewares/auth.middleware.js";
 import { isAdmin } from "../middlewares/permission.middleware.js";
@@ -33,4 +36,7 @@ router.get("/staff-table", isLoggedIn, isAdmin, allStaff, (req, res) => {
     error: null,
   });
 });
+
+router.get('/settings',isLoggedIn,profile)
+router.get('/staffs/login-details', isLoggedIn, isAdmin, staffLoginDetails);
 export default router;

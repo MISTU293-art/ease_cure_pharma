@@ -273,7 +273,7 @@
 
       <ul class="nav flex-column mt-3">
         <li>
-          <a href="/dashboard" class="nav-link active"
+          <a href="/dashboard" class="nav-link"
             ><i class="bi bi-speedometer2"></i>
             <span class="menu-text">
               Dashboard
@@ -291,7 +291,15 @@
             </span></a
           >
         </li>
-
+        <li>
+          <a href="/staffs/login-details" class="nav-link"
+            ><i class="bi bi-receipt"></i>
+            <span class="menu-text">
+              Staff Login Analysis
+              <small>কর্মচারীর লগইন তথ্য</small>
+            </span></a
+          >
+        </li>
         <li>
           <a href="/customer" class="nav-link"
             ><i class="bi bi-people"></i>
@@ -341,8 +349,12 @@
             </span></a
           >
         </li>
-
-
+        <li>
+          <a href="/settings" class="nav-link">
+            <i class="bi bi-gear me-2"></i>
+            Settings <small>সেটিংস</small>
+          </a>
+        </li>
       </ul>
 
       <div class="logout">
@@ -375,8 +387,10 @@
       <div class="offcanvas-body p-0">
         <ul class="nav flex-column p-3">
           <li>
-            <a href="/dashboard" class="nav-link active"
-              ><i class="bi bi-speedometer2 me-2"></i>Dashboard<small>ড্যাশবোর্ড</small></a
+            <a href="/dashboard" class="nav-link"
+              ><i class="bi bi-speedometer2 me-2"></i>Dashboard<small
+                >ড্যাশবোর্ড</small
+              ></a
             >
           </li>
 
@@ -388,36 +402,51 @@
 
           <li>
             <a href="/customer" class="nav-link"
-              ><i class="bi bi-people me-2"></i>Customers   <small>গ্রাহক</small></a
+              ><i class="bi bi-people me-2"></i>Customers
+              <small>গ্রাহক</small></a
             >
           </li>
 
           <li>
             <a href="/stock-add" class="nav-link"
-              ><i class="bi bi-box-seam me-2"></i>Inventory <small>স্টক এন্ট্রি</small></a
+              ><i class="bi bi-box-seam me-2"></i>Inventory
+              <small>স্টক এন্ট্রি</small></a
             >
           </li>
-          
-        <li>
-          <a href="/stock" class="nav-link"
-            ><i class="bi bi-capsule"></i>
-            <span class="menu-text">
-              Medicines
-              <small>ওষুধ</small>
-            </span></a
-          >
-        </li>
+          <li>
+            <a href="/staff/login-details" class="nav-link"
+              ><i class="bi bi-box-seam me-2"></i>Inventory
+                 <small>কর্মচারীর লগইন তথ্য</small></a
+            >
+          </li>
+          <li>
+            <a href="/stock" class="nav-link"
+              ><i class="bi bi-capsule"></i>
+              <span class="menu-text">
+                Medicines
+                <small>ওষুধ</small>
+              </span></a
+            >
+          </li>
 
           <li>
             <a href="/add-staff" class="nav-link"
-              ><i class="bi bi-person-badge me-2"></i> Register Staff <small>কর্মচারী নিবন্ধন</small></a
+              ><i class="bi bi-person-badge me-2"></i> Register Staff
+              <small>কর্মচারী নিবন্ধন</small></a
             >
           </li>
 
           <li>
             <a href="/staff-table" class="nav-link"
-              ><i class="bi bi-bar-chart me-2"></i>Staff Details     <small>কর্মচারী তালিকা</small></a
+              ><i class="bi bi-bar-chart me-2"></i>Staff Details
+              <small>কর্মচারী তালিকা</small></a
             >
+          </li>
+          <li>
+            <a href="/settings" class="nav-link">
+              <i class="bi bi-gear me-2"></i>
+              Settings <small>সেটিংস</small>
+            </a>
           </li>
         </ul>
 

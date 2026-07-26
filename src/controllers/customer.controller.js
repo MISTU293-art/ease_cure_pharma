@@ -358,7 +358,20 @@ async function chatbotMessage(req, res) {
 
 async function AllCustomer(req, res) {
   try {
-    const bills = await billingModel.find().sort({ createdAt: -1 });
+    let page = Number.parseInt(req.query.page, 10) || 1;
+    let limit = Number.parseInt(req.query.limit, 10) || 10;
+    if (page < 1) page = 1;
+    if (limit < 1) limit = 10;
+
+    const totalCustomers = await billingModel.countDocuments();
+    const totalPages = Math.max(Math.ceil(totalCustomers / limit), 1);
+    if (page > totalPages) page = totalPages;
+
+    const bills = await billingModel
+      .find()
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
 
     const customers = await Promise.all(
       bills.map(async (bill) => {
@@ -395,6 +408,10 @@ async function AllCustomer(req, res) {
 
     return res.render("customer", {
       customers,
+      totalCustomers,
+      currentPage: page,
+      totalPages,
+      pageSize: limit,
       message: null,
       error: null,
     });
@@ -402,6 +419,10 @@ async function AllCustomer(req, res) {
     console.error(error);
     return res.render("customer", {
       customers: [],
+      totalCustomers: 0,
+      currentPage: 1,
+      totalPages: 1,
+      pageSize: 10,
       message: null,
       error: "Unable to load customer records.",
     });

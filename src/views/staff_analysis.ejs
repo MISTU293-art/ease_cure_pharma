@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Login Details</title>
+    <style>
+        body {
+            background: #f5f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .content-wrapper {
+            margin-left: 250px;
+            padding: 24px;
+        }
+
+        .page-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+        }
+
+        .page-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        .table th {
+            background: #f8fafc;
+            color: #374151;
+        }
+
+        .badge-soft {
+            background: #e8f0ff;
+            color: #2563eb;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <%- include('./partials/sidebar.ejs') %>
+
+    <div class="content-wrapper">
+        <div class="page-card">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <h3 class="page-title">Staff Login Activity</h3>
+                    <p class="page-subtitle">View staff login records with the IP address and timestamp.</p>
+                </div>
+                <% if (loginLogs && loginLogs.length > 0) { %>
+                    <span class="badge-soft"><%= loginLogs.length %> login records</span>
+                <% } %>
+            </div>
+
+            <% if (error) { %>
+                <div class="alert alert-danger"><%= error %></div>
+            <% } %>
+
+            <% if (loginLogs && loginLogs.length > 0) { %>
+                <div class="table-responsive mt-3">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Staff Name</th>
+                                <th>Email</th>
+                                <th>Login IP</th>
+                                <th>Login Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% loginLogs.forEach(function(log) { %>
+                                <tr>
+                                    <td><%= log.user && log.user.name ? log.user.name : 'Unknown staff' %></td>
+                                    <td><%= log.user && log.user.email ? log.user.email : '-' %></td>
+                                    <td><%= log.ip || 'N/A' %></td>
+                                    <td><%= log.logged_at ? new Date(log.logged_at).toLocaleString() : '-' %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="alert alert-info mt-3">No login records found yet.</div>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>
