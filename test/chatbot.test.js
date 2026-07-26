@@ -28,3 +28,13 @@ test('chatbot answers sales questions from bill data', () => {
   assert.match(reply, /Amoxicillin sold/);
   assert.match(reply, /2 units/);
 });
+
+test('chatbot understands natural price questions', () => {
+  const reply = buildChatbotReply('how much is paracetamol?', {
+    stocks: [{ name: 'Paracetamol', quantity: 15, sellingPrice: 20, category: 'medicine' }],
+    bills: [],
+  });
+
+  assert.match(reply, /selling price/i);
+  assert.match(reply, /20\.00/);
+});

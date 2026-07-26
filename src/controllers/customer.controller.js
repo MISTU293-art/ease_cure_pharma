@@ -293,7 +293,7 @@ function buildChatbotReply(message = "", data = {}) {
     return `Medicine: ${medicineMatch.name}\nCurrent stock: ${medicineMatch.quantity} units\nSelling price: ₹ ${Number(medicineMatch.sellingPrice || 0).toFixed(2)}\nCategory: ${medicineMatch.category || "N/A"}\n\nওষুধ: ${medicineMatch.name}\nবর্তমান স্টক: ${medicineMatch.quantity} ইউনিট\nবিক্রয় মূল্য: ₹ ${Number(medicineMatch.sellingPrice || 0).toFixed(2)}`;
   }
 
-  if (medicineMatch && /(price|cost|selling price|rate)/.test(text)) {
+  if (medicineMatch && /(price|cost|selling price|rate|how much|how much is|what is the price|what's the price|what is the cost|what's the cost)/.test(text)) {
     return `The selling price of ${medicineMatch.name} is ₹ ${Number(medicineMatch.sellingPrice || 0).toFixed(2)}.\n${medicineMatch.name} এর বিক্রয় মূল্য ₹ ${Number(medicineMatch.sellingPrice || 0).toFixed(2)}।`;
   }
 
