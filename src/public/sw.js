@@ -1,5 +1,5 @@
 const CACHE_NAME = "ecommerce-v2";
-const STATIC_ASSETS = ["/", "/offline.html"];
+const STATIC_ASSETS = ["/"];
 
 // Install: cache static shell
 self.addEventListener("install", event => {
@@ -26,10 +26,8 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
     const { request } = event;
 
-    // Never intercept non-GET requests (orders, inventory updates, etc.)
     if (request.method !== "GET") return;
 
-    // API calls: network-first, don't cache
     if (request.url.includes("/api/")) {
         event.respondWith(
             fetch(request).catch(() => caches.match(request))
@@ -37,10 +35,9 @@ self.addEventListener("fetch", event => {
         return;
     }
 
-    // Static assets: cache-first, fallback to network, fallback to offline page
     event.respondWith(
         caches.match(request).then(cached => {
-            return cached || fetch(request).catch(() => caches.match("/offline.html"));
+            return cached || fetch(request);
         })
     );
 });
